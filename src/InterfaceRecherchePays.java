@@ -3,11 +3,12 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.util.ArrayList;
 
 public class InterfaceRecherchePays extends JFrame {
 
     private JPanel panelRecherche = new JPanel(new FlowLayout());
-
+    private XMLParser parser = new XMLParser("countries.xml");
     private JComboBox<String> continents = new JComboBox<>();
     private JComboBox<String> langages = new JComboBox<>();
     private JButton createXSL = new JButton("Générer XSL");
@@ -34,6 +35,13 @@ public class InterfaceRecherchePays extends JFrame {
         /**
          * A compléter : Remplissage des listes de recherche (avec les continents et les langues parlées dans l'ordre alphabétique)
          */
+        ArrayList<String> dataContinents = parser.parse("//countries/element/region");
+        ArrayList<String> dataLangage = parser.parse("//countries/element/region");
+
+        for(String s : dataContinents)
+        {
+            continents.addItem(s);
+        }
 
         setLayout(new BorderLayout());
 
