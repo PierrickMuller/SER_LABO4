@@ -4,9 +4,9 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class InterfaceRecherchePays extends JFrame {
-
     private JPanel panelRecherche = new JPanel(new FlowLayout());
     private XMLParser parser = new XMLParser("countries.xml");
     private JComboBox<String> continents = new JComboBox<>();
@@ -35,13 +35,21 @@ public class InterfaceRecherchePays extends JFrame {
         /**
          * A compléter : Remplissage des listes de recherche (avec les continents et les langues parlées dans l'ordre alphabétique)
          */
-        ArrayList<String> dataContinents = parser.parse("//countries/element/region");
-        ArrayList<String> dataLangage = parser.parse("//countries/element/region");
+        ArrayList<String> dataContinents
+                = parser.parse("//countries/element/region[not(. = ../following-sibling::element/region)]");
 
-        for(String s : dataContinents)
-        {
+        //fill list with continents
+        for(String s : dataContinents) {
             continents.addItem(s);
         }
+        Collections.sort(dataContinents);
+
+        //fill list with languages
+        ArrayList<String> dataLangage = parser.parse("//countries/element/languages/element/name[not(. = ../../../following-sibling::element/languages/element/name)]");
+        for(String s : dataLangage) {
+            langages.addItem(s);
+        }
+        Collections.sort(dataLangage);
 
         setLayout(new BorderLayout());
 
@@ -70,9 +78,7 @@ public class InterfaceRecherchePays extends JFrame {
     }
 
     public static void main(String ... args) {
-
         new InterfaceRecherchePays(new File("countries.xml"));
-
     }
 
 }
