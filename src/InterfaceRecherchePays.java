@@ -27,6 +27,24 @@ public class InterfaceRecherchePays extends JFrame {
     private JTextField superficieMin = new JTextField(5);
     private JTextField superficieMax = new JTextField(5);
 
+    private Document document;
+
+    private Element createImage(Double width){
+        Element image = null;
+        if(document != null){
+            image = document.createElement("img");
+            image.setAttribute("width", width.toString());
+            Element imgName = document.createElement("xsl:attribute");
+            imgName.setAttribute("name", "src");
+            Element imgSrc = document.createElement("xsl:value-of");
+            imgSrc.setAttribute("select", "flag");
+            imgName.appendChild(imgSrc);
+            image.appendChild(imgName);
+        }
+
+        return image;
+    }
+
     public InterfaceRecherchePays(File xmlFile) {
 
         createXSL.addMouseListener(new MouseAdapter() {
@@ -35,7 +53,7 @@ public class InterfaceRecherchePays extends JFrame {
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
                 try {
-                    Document document = DocumentBuilderFactory
+                    document = DocumentBuilderFactory
                                         .newInstance()
                                         .newDocumentBuilder()
                                         .newDocument();
@@ -107,16 +125,7 @@ public class InterfaceRecherchePays extends JFrame {
                     divCountries.appendChild(valueName);
 
                     //*IMAGE
-                    Element image = document.createElement("img");
-                    image.setAttribute("width", "25");
-                    Element imgName = document.createElement("xsl:attribute");
-                    imgName.setAttribute("name", "src");
-                    Element imgSrc = document.createElement("xsl:value-of");
-                    imgSrc.setAttribute("select", "flag");
-
-                    imgName.appendChild(imgSrc);
-                    image.appendChild(imgName);
-                    divCountries.appendChild(image);
+                    divCountries.appendChild(createImage(25.0));
                     button.appendChild(divCountries);
 
                     //MODAL
@@ -156,6 +165,14 @@ public class InterfaceRecherchePays extends JFrame {
 
                     Element divModaleBody = document.createElement("div");
                     divModaleBody.setAttribute("class", "modal-body");
+                    divModaleBody.appendChild(createImage(100.0));
+
+                    Element capital = document.createElement("label");
+                    Element valueCapital = document.createElement("xsl:value-of");
+                    valueCapital.setAttribute("select", "concat('Continent : ',region)");
+                    capital.appendChild(valueCapital);
+
+                    divModaleBody.appendChild(capital);
 
                     Element divModaleFooter = document.createElement("div");
                     divModaleFooter.setAttribute("class", "modal-footer");

@@ -19,7 +19,7 @@
               </xsl:attribute>
               <div class="col-sm-3">
                 <xsl:value-of select="translations/fr"/>
-                <img width="25">
+                <img width="25.0">
                   <xsl:attribute name="src">
                     <xsl:value-of select="flag"/>
                   </xsl:attribute>
@@ -37,7 +37,16 @@
                       <xsl:value-of select="translations/fr"/>
                     </h5>
                   </div>
-                  <div class="modal-body"/>
+                  <div class="modal-body">
+                    <img width="100.0">
+                      <xsl:attribute name="src">
+                        <xsl:value-of select="flag"/>
+                      </xsl:attribute>
+                    </img>
+                    <label>
+                      <xsl:value-of select="concat('Continent : ',region)"/>
+                    </label>
+                  </div>
                   <div class="modal-footer">
                     <button class="btn btn-primary" data-dismiss="modal" type="button">Fermer</button>
                   </div>
