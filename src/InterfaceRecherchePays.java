@@ -18,7 +18,7 @@ import javax.xml.transform.stream.StreamResult;
 import java.io.FileWriter;
 import java.io.IOException;
 
-public class InterfaceRecherchePays extends JFrame {
+public class InterfaceRecherchePays_OLD extends JFrame {
     private JPanel panelRecherche = new JPanel(new FlowLayout());
     private XMLParser parser = new XMLParser("countries_NEW.xml");
     private JComboBox<String> continents = new JComboBox<>();
@@ -29,7 +29,7 @@ public class InterfaceRecherchePays extends JFrame {
 
     private Document document;
 
-    private Element createImage(Double width){
+    private Element createElementImage(Double width){
         Element image = null;
         if(document != null){
             image = document.createElement("img");
@@ -45,8 +45,17 @@ public class InterfaceRecherchePays extends JFrame {
         return image;
     }
 
-    public InterfaceRecherchePays(File xmlFile) {
+    private Element createElementValue(String param){
+        Element value = null;
+        if(document != null){
+            value = document.createElement("xsl:value-of");
+            value.setAttribute("select", param);
+        }
 
+        return value;
+    }
+
+    public InterfaceRecherchePays_OLD(File xmlFile) {
         createXSL.addMouseListener(new MouseAdapter() {
 
             @Override
@@ -102,9 +111,7 @@ public class InterfaceRecherchePays extends JFrame {
                     button.setAttribute("data-toggle", "modal");
                     Element buttonTarget = document.createElement("xsl:attribute");
                     buttonTarget.setAttribute("name", "data-target");
-                    Element buttonID = document.createElement("xsl:value-of");
-                    buttonID.setAttribute("select", "concat('#',alpha3Code)");
-                    buttonTarget.appendChild(buttonID);
+                    buttonTarget.appendChild(createElementValue("concat('#',alpha3Code)"));
                     button.appendChild(buttonTarget);
 
                     Element divRows = document.createElement("div");
@@ -112,20 +119,19 @@ public class InterfaceRecherchePays extends JFrame {
 
                     Element foreach = document.createElement("xsl:for-each");
                     foreach.setAttribute("select", "countries/element");
+
+                    //tri par nom de pays FR
                     Element sort = document.createElement("xsl:sort");
                     sort.setAttribute("select","translations/fr");
-
                     foreach.appendChild(sort);
 
-                    Element divCountries = document.createElement("div");
-                    divCountries.setAttribute("class", "col-sm-3");
 
-                    Element valueName = document.createElement("xsl:value-of");
-                    valueName.setAttribute("select", "translations/fr");
-                    divCountries.appendChild(valueName);
+                    Element divCountries = document.createElement("div");
+                    divCountries.setAttribute("class", "col-sm-6");
+                    divCountries.appendChild(createElementValue("translations/fr"));
 
                     //*IMAGE
-                    divCountries.appendChild(createImage(25.0));
+                    divCountries.appendChild(createElementImage(25.0));
                     button.appendChild(divCountries);
 
                     //MODAL
@@ -134,13 +140,9 @@ public class InterfaceRecherchePays extends JFrame {
 
                     Element idModale = document.createElement("xsl:attribute");
                     idModale.setAttribute("name", "id");
-                    Element valueIdModale = document.createElement("xsl:value-of");
-                    valueIdModale.setAttribute("select", "alpha3Code");
-                    idModale.appendChild(valueIdModale);
+                    idModale.appendChild(createElementValue("alpha3Code"));
                     divModale.appendChild(idModale);
 
-
-                    //divModale.setAttribute("id", "exampleModal");
                     divModale.setAttribute("tabindex", "-1");
                     divModale.setAttribute("role", "dialog");
                     divModale.setAttribute("aria-labelledby", "exampleModalLabel");
@@ -158,21 +160,68 @@ public class InterfaceRecherchePays extends JFrame {
                     Element titleModale = document.createElement("h5");
                     titleModale.setAttribute("class", "modal-title");
 
-                    Element valueNameModale = document.createElement("xsl:value-of");
-                    valueNameModale.setAttribute("select", "translations/fr");
-                    titleModale.appendChild(valueNameModale);
+                    titleModale.appendChild(createElementValue("translations/fr"));
                     divModaleHeader.appendChild(titleModale);
 
+                    //corps de la fenetre modale
+                    Element tableBody = document.createElement("table");
+                    Element trTableBody = document.createElement("tr");
+                    Element tdImage = document.createElement("td");
+                    Element tdDataCountry = document.createElement("td");
                     Element divModaleBody = document.createElement("div");
                     divModaleBody.setAttribute("class", "modal-body");
-                    divModaleBody.appendChild(createImage(100.0));
 
-                    Element capital = document.createElement("label");
-                    Element valueCapital = document.createElement("xsl:value-of");
-                    valueCapital.setAttribute("select", "concat('Continent : ',region)");
-                    capital.appendChild(valueCapital);
+                    tdImage.appendChild(createElementImage(100.0));
 
-                    divModaleBody.appendChild(capital);
+                    tdDataCountry.appendChild(createElementValue("concat('Capitale : ',capital)"));
+                    tdDataCountry.appendChild(document.createElement("br"));
+                    tdDataCountry.appendChild(createElementValue("concat('Population : ',population, ' habitants')"));
+                    tdDataCountry.appendChild(document.createElement("br"));
+                    tdDataCountry.appendChild(createElementValue("concat('Superficie : ',area, ' km2')"));
+                    tdDataCountry.appendChild(document.createElement("br"));
+                    tdDataCountry.appendChild(createElementValue("concat('Continent : ',region)"));
+                    tdDataCountry.appendChild(document.createElement("br"));
+                    tdDataCountry.appendChild(createElementValue("concat('Sous-Continent : ',subregion)"));
+
+                    trTableBody.appendChild(tdImage);
+                    trTableBody.appendChild(tdDataCountry);
+                    tableBody.appendChild(trTableBody);
+
+                    //Langues
+                    Element trTableLang = document.createElement("tr");
+                    Element tdLang = document.createElement("td");
+
+                    Element panel = document.createElement("div");
+                    panel.setAttribute("class", "panel panel-default");
+
+                    Element panelHeader = document.createElement("div");
+                    panelHeader.setAttribute("class", "panel panel-heading");
+                    panelHeader.setTextContent("Langues parlées");
+
+                    Element panelBody = document.createElement("div");
+                    panelBody.setAttribute("class", "panel panel-body");
+
+                    Element tableLang = document.createElement("table");
+                    tableLang.setAttribute("class", "table table-bordered");
+
+                    Element foreachLang = document.createElement("xsl:for-each");
+                    foreachLang.setAttribute("select", "languages/element");
+                    Element trLstLang = document.createElement("tr");
+                    Element tdLstLang = document.createElement("td");
+
+                    tdLstLang.appendChild(createElementValue("name"));
+                    trLstLang.appendChild(tdLstLang);
+                    foreachLang.appendChild(trLstLang);
+
+                    tableLang.appendChild(foreachLang);
+                    panelBody.appendChild(tableLang);
+
+                    trTableLang.appendChild(tdLang);
+                    panel.appendChild(panelHeader);
+                    panel.appendChild(panelBody);
+                    tdLang.appendChild(panel);
+                    tableBody.appendChild(trTableLang);
+                    divModaleBody.appendChild(tableBody);
 
                     Element divModaleFooter = document.createElement("div");
                     divModaleFooter.setAttribute("class", "modal-footer");
@@ -189,7 +238,6 @@ public class InterfaceRecherchePays extends JFrame {
                     divModaleContent.appendChild(divModaleFooter);
                     divModaleDialog.appendChild(divModaleContent);
                     divModale.appendChild(divModaleDialog);
-                    //
 
                     foreach.appendChild(button);
                     foreach.appendChild(divModale);
@@ -247,6 +295,7 @@ public class InterfaceRecherchePays extends JFrame {
 
         ArrayList<String> dataLangage = parser.parse("//countries/element/languages/element/name[not(. = ../../../following-sibling::element/languages/element/name)]");
         Collections.sort(dataLangage); //TRI possible via xpath?
+
         //fill list with languages
         for(String s : dataLangage) {
             langages.addItem(s);
@@ -276,8 +325,7 @@ public class InterfaceRecherchePays extends JFrame {
         setTitle("Interface de recherche de pays");
     }
 
-    public static void main(String ... args) {
-        new InterfaceRecherchePays(new File("countries.xml"));
+    public static void main2(String ... args) {
+        new InterfaceRecherchePays_OLD(new File("countries.xml"));
     }
-
 }
