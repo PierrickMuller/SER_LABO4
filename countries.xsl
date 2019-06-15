@@ -17,7 +17,7 @@
               <xsl:attribute name="data-target">
                 <xsl:value-of select="concat('#',alpha3Code)"/>
               </xsl:attribute>
-              <div class="col-sm-3">
+              <div class="col-sm-6">
                 <xsl:value-of select="translations/fr"/>
                 <img width="25.0">
                   <xsl:attribute name="src">
@@ -38,14 +38,46 @@
                     </h5>
                   </div>
                   <div class="modal-body">
-                    <img width="100.0">
-                      <xsl:attribute name="src">
-                        <xsl:value-of select="flag"/>
-                      </xsl:attribute>
-                    </img>
-                    <label>
-                      <xsl:value-of select="region"/>
-                    </label>
+                    <table>
+                      <tr>
+                        <td>
+                          <img width="100.0">
+                            <xsl:attribute name="src">
+                              <xsl:value-of select="flag"/>
+                            </xsl:attribute>
+                          </img>
+                        </td>
+                        <td>
+                          <xsl:value-of select="concat('Capitale : ',capital)"/>
+                          <br/>
+                          <xsl:value-of select="concat('Population : ',population, ' habitants')"/>
+                          <br/>
+                          <xsl:value-of select="concat('Superficie : ',area, ' km2')"/>
+                          <br/>
+                          <xsl:value-of select="concat('Continent : ',region)"/>
+                          <br/>
+                          <xsl:value-of select="concat('Sous-Continent : ',subregion)"/>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <div class="panel panel-default">
+                            <div class="panel panel-heading">Langues parlées</div>
+                            <div class="panel panel-body">
+                              <table class="table table-bordered">
+                                <xsl:for-each select="languages/element">
+                                  <tr>
+                                    <td>
+                                      <xsl:value-of select="name"/>
+                                    </td>
+                                  </tr>
+                                </xsl:for-each>
+                              </table>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                    </table>
                   </div>
                   <div class="modal-footer">
                     <button class="btn btn-primary" data-dismiss="modal" type="button">Fermer</button>

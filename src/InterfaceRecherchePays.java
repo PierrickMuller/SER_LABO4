@@ -18,7 +18,7 @@ import javax.xml.transform.stream.StreamResult;
 import java.io.FileWriter;
 import java.io.IOException;
 
-public class InterfaceRecherchePays_OLD extends JFrame {
+public class InterfaceRecherchePays extends JFrame {
     private JPanel panelRecherche = new JPanel(new FlowLayout());
     private XMLParser parser = new XMLParser("countries_NEW.xml");
     private JComboBox<String> continents = new JComboBox<>();
@@ -26,13 +26,11 @@ public class InterfaceRecherchePays_OLD extends JFrame {
     private JButton createXSL = new JButton("Générer XSL");
     private JTextField superficieMin = new JTextField(5);
     private JTextField superficieMax = new JTextField(5);
-
     private Document document;
 
     private Element createElementImage(Double width){
-        Element image = null;
-        if(document != null){
-            image = document.createElement("img");
+        try {
+            Element image = document.createElement("img");
             image.setAttribute("width", width.toString());
             Element imgName = document.createElement("xsl:attribute");
             imgName.setAttribute("name", "src");
@@ -40,28 +38,56 @@ public class InterfaceRecherchePays_OLD extends JFrame {
             imgSrc.setAttribute("select", "flag");
             imgName.appendChild(imgSrc);
             image.appendChild(imgName);
-        }
 
-        return image;
+            return image;
+        }
+        catch(NullPointerException error){
+            throw error;
+        }
     }
 
     private Element createElementValue(String param){
-        Element value = null;
-        if(document != null){
-            value = document.createElement("xsl:value-of");
+        try {
+            Element value = document.createElement("xsl:value-of");
             value.setAttribute("select", param);
+            return value;
         }
-
-        return value;
+        catch(NullPointerException error){
+            throw error;
+        }
     }
 
-    public InterfaceRecherchePays_OLD(File xmlFile) {
+    public InterfaceRecherchePays(File xmlFile) {
+        final String NO_CHOICE = "-";
+
         createXSL.addMouseListener(new MouseAdapter() {
 
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
                 try {
+                    //recupere les elements choisis et cree un filtre
+                    String filter = "";
+                    if(!superficieMin.getText().isEmpty()){
+                        filter = "area >= " + Double.parseDouble(superficieMin.getText());
+                    }
+
+                    if(!superficieMax.getText().isEmpty()){
+                        filter += (filter != "" ? " and " : "") + "area <= " + Double.parseDouble(superficieMax.getText());
+                    }
+
+                    String continent = continents.getSelectedItem().toString();
+
+                    if(continent != "-"){
+                        filter += (filter != "" ? " and " : "") + "region = \"" + continent+"\"";
+                    }
+
+                    String lang = langages.getSelectedItem().toString();
+
+                    if(lang != "-"){
+                        filter += (filter != "" ? " and " : "") + "languages/element/name = \"" + lang+"\"";
+                    }
+
                     document = DocumentBuilderFactory
                                         .newInstance()
                                         .newDocumentBuilder()
@@ -118,7 +144,13 @@ public class InterfaceRecherchePays_OLD extends JFrame {
                     divRows.setAttribute("class", "row");
 
                     Element foreach = document.createElement("xsl:for-each");
-                    foreach.setAttribute("select", "countries/element");
+
+                    String countriesQuery = "countries/element";
+
+                    if(filter != ""){
+                        countriesQuery += "["+filter+"]";
+                    }
+                    foreach.setAttribute("select", countriesQuery); //filtre
 
                     //tri par nom de pays FR
                     Element sort = document.createElement("xsl:sort");
@@ -275,6 +307,10 @@ public class InterfaceRecherchePays_OLD extends JFrame {
                     error.printStackTrace();
                 } catch (TransformerException error) {
                     error.printStackTrace();
+                } catch(java.lang.NumberFormatException error){
+                    error.printStackTrace();
+                } catch(NullPointerException error){
+                    error.printStackTrace();
                 }
             }
 
@@ -288,6 +324,7 @@ public class InterfaceRecherchePays_OLD extends JFrame {
 
         Collections.sort(dataContinents);//TRI possible via xpath?
 
+        dataContinents.add(0, NO_CHOICE);
         //fill list with continents
         for(String s : dataContinents) {
             continents.addItem(s);
@@ -296,6 +333,7 @@ public class InterfaceRecherchePays_OLD extends JFrame {
         ArrayList<String> dataLangage = parser.parse("//countries/element/languages/element/name[not(. = ../../../following-sibling::element/languages/element/name)]");
         Collections.sort(dataLangage); //TRI possible via xpath?
 
+        dataLangage.add(0, NO_CHOICE);
         //fill list with languages
         for(String s : dataLangage) {
             langages.addItem(s);
@@ -325,7 +363,7 @@ public class InterfaceRecherchePays_OLD extends JFrame {
         setTitle("Interface de recherche de pays");
     }
 
-    public static void main2(String ... args) {
-        new InterfaceRecherchePays_OLD(new File("countries.xml"));
+    public static void main(String ... args) {
+        new InterfaceRecherchePays(new File("countries.xml"));
     }
 }
