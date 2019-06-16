@@ -11,7 +11,7 @@
       </head>
       <body>
         <div class="row">
-          <xsl:for-each select="countries/element">
+          <xsl:for-each select="countries/element[area &lt;= 10000.0 and region = &quot;Europe&quot;]">
             <xsl:sort select="translations/fr"/>
             <div class="col-sm-3">
               <button class="btn btn-default" data-toggle="modal" type="button">
